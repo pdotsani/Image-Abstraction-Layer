@@ -1,4 +1,5 @@
 #!image-abstraction/bin/python
+import datetime
 import requests
 import json
 from flask import Flask, jsonify
@@ -19,16 +20,26 @@ def makeDict(item):
 		'thumb': item['image']['thumbnailLink']
 	}
 
+def makeTimeStamp(item):
+	return {
+		'time': item['time'],
+		'query': item['query'] 
+	}
+
 @app.route('/imagesearch/<query>')
 def image_search(query):
+	timestamp = datetime.datetime.utcnow()
+	mongo.db.history.insert_one({ "query": query, "time": timestamp })
 	url = "{0}?key={1}&searchType=image&num=10&q={2}&cx={3}".format(GOOGLE_CUSTOM_SEARCH_URL, GOOGLE_AUTH_KEY, query, GOOGLE_SEARCH_ENGINE)
 	the_dict = json.loads(requests.get(url).text)
-	result = [makeDict(item) for item in the_dict['items']]
+	result = [ makeDict(item) for item in the_dict['items'] ]
 	return jsonify(result)
 
 @app.route('/history')
 def history():
-  return "Search history here!"
+	query = mongo.db.history.find()
+	results = [ makeTimeStamp(item) for item in query ]
+	return jsonify(results)
 
 if __name__ == '__main__':
   app.run(debug=True)
