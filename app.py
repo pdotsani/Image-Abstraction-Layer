@@ -5,12 +5,14 @@ import json
 from flask import Flask, jsonify
 from flask_pymongo import PyMongo
 
+import CONFIG_FILE
+
 app = Flask(__name__)
 mongo = PyMongo(app)
 
-GOOGLE_AUTH_KEY = "AIzaSyD4-UXkrmqT-nj4pqcbEMBPF13I8QFhRIU"
-GOOGLE_CUSTOM_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1'
-GOOGLE_SEARCH_ENGINE = "016465477141158983016:zw10rls-o5c"
+GOOGLE_AUTH_KEY = CONFIG_FILE.GOOGLE_AUTH
+GOOGLE_SEARCH_ENGINE = CONFIG_FILE.GOOGLE_SEARCH_ENGINE
+GOOGLE_CUSTOM_SEARCH_URL = "https://www.googleapis.com/customsearch/v1"
 
 def makeDict(item):
 	return {
