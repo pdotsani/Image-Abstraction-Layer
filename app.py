@@ -6,16 +6,31 @@ import json
 from flask import Flask, jsonify
 from flask_pymongo import PyMongo
 
-import CONFIG_FILE
+try:
+	import CONFIG_FILE
+except:
+	print "No local config file!"
 
 app = Flask(__name__)
 mongo = PyMongo(app)
 
-MONGO_URI = str(os.enviorn.get('MONGO_URI'))
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/app' if MONGO_URI is None else MONGO_URI
+try:
+	app.config['MONGO_URI'] =	os.environ['MONGODB_URI']
+	app.config['MONGO_USERNAME'] = os.environ['MONGODB_USER']
+	app.config['MONGO_PASSWORD'] = os.environ['MONGODB_PASS']
+except:
+	app.config['MONGO_URI'] = 'mongodb://localhost:27017/app'
 
-GOOGLE_AUTH_KEY = str(os.enviorn.get('GOOGLE_AUTH')) if CONFIG_FILE.GOOGLE_AUTH is None else CONFIG_FILE.GOOGLE_AUTH
-GOOGLE_SEARCH_ENGINE = str(os.enviorn.get('GOOGLE_SEARCH_ENGINE')) if CONFIG_FILE.GOOGLE_SEARCH_ENGINE is None else CONFIG_FILE.GOOGLE_SEARCH_ENGINE
+try:
+	GOOGLE_AUTH_KEY = os.environ['GOOGLE_AUTH']
+except:
+	GOOGLE_AUTH_KEY = CONFIG_FILE.GOOGLE_AUTH
+
+try:
+	GOOGLE_SEARCH_ENGINE = os.environ['GOOGLE_SEARCH_ENGINE']
+except:
+	GOOGLE_SEARCH_ENGINE = CONFIG_FILE.GOOGLE_SEARCH_ENGINE
+
 GOOGLE_CUSTOM_SEARCH_URL = "https://www.googleapis.com/customsearch/v1"
 
 def makeDict(item):
@@ -32,7 +47,7 @@ def makeTimeStamp(item):
 		'query': item['query'] 
 	}
 
-@app.route('/imagesearch/<query>')
+@app.route('/imagesearch/<query>', methods=['GET'])
 def image_search(query):
 	timestamp = datetime.datetime.utcnow()
 	mongo.db.history.insert_one({ "query": query, "time": timestamp })
@@ -41,11 +56,11 @@ def image_search(query):
 	result = [ makeDict(item) for item in the_dict['items'] ]
 	return jsonify(result)
 
-@app.route('/history')
+@app.route('/history', methods=['GET'])
 def history():
 	query = mongo.db.history.find()
 	results = [ makeTimeStamp(item) for item in query ]
 	return jsonify(results)
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run()
