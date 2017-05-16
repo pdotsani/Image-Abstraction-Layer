@@ -11,6 +11,9 @@ import CONFIG_FILE
 app = Flask(__name__)
 mongo = PyMongo(app)
 
+MONGO_URI = str(os.enviorn.get('MONGO_URI'))
+app.config['MONGO_URI'] = 'mongodb://localhost:27017/app' if MONGO_URI is None else MONGO_URI
+
 GOOGLE_AUTH_KEY = str(os.enviorn.get('GOOGLE_AUTH')) if CONFIG_FILE.GOOGLE_AUTH is None else CONFIG_FILE.GOOGLE_AUTH
 GOOGLE_SEARCH_ENGINE = str(os.enviorn.get('GOOGLE_SEARCH_ENGINE')) if CONFIG_FILE.GOOGLE_SEARCH_ENGINE is None else CONFIG_FILE.GOOGLE_SEARCH_ENGINE
 GOOGLE_CUSTOM_SEARCH_URL = "https://www.googleapis.com/customsearch/v1"
