@@ -1,4 +1,5 @@
 #!image-abstraction/bin/python
+import os
 import datetime
 import requests
 import json
@@ -10,8 +11,8 @@ import CONFIG_FILE
 app = Flask(__name__)
 mongo = PyMongo(app)
 
-GOOGLE_AUTH_KEY = CONFIG_FILE.GOOGLE_AUTH
-GOOGLE_SEARCH_ENGINE = CONFIG_FILE.GOOGLE_SEARCH_ENGINE
+GOOGLE_AUTH_KEY = str(os.enviorn.get('GOOGLE_AUTH')) if CONFIG_FILE.GOOGLE_AUTH is None else CONFIG_FILE.GOOGLE_AUTH
+GOOGLE_SEARCH_ENGINE = str(os.enviorn.get('GOOGLE_SEARCH_ENGINE')) if CONFIG_FILE.GOOGLE_SEARCH_ENGINE is None else CONFIG_FILE.GOOGLE_SEARCH_ENGINE
 GOOGLE_CUSTOM_SEARCH_URL = "https://www.googleapis.com/customsearch/v1"
 
 def makeDict(item):
