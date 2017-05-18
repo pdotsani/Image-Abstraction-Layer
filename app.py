@@ -4,7 +4,7 @@ import datetime
 import requests
 import json
 from flask import Flask, jsonify
-from flask_pymongo import PyMongo
+from flask_pymongo import PyMongo, MongoClient
 
 try:
 	import CONFIG_FILE
@@ -12,14 +12,19 @@ except:
 	print "No local config file!"
 
 app = Flask(__name__)
-mongo = PyMongo(app)
 
 try:
-	app.config['MONGO_URI'] =	os.environ['MONGODB_URI']
-	app.config['MONGO_USERNAME'] = os.environ['MONGODB_USER']
-	app.config['MONGO_PASSWORD'] = os.environ['MONGODB_PASS']
+	MONGODB_NAME = os.environ['MONGODB_NAME']
+	MONGODB_HOST = os.environ['MONGODB_HOST']
+	MONGODB_PORT = os.environ['MONGODB_PORT']
+	MONGODB_USER = os.environ['MONGODB_USER']
+	MONGODB_PASS = os.environ['MONGODB_PASS']
+	connecion = MongoClient(MONGODB_HOST, int(MONGODB_PORT))
+	mongo = connecion[MONGODB_NAME]
+	mongo.authenticate(MONGODB_USER, MONGODB_PASS)
 except:
 	app.config['MONGO_URI'] = 'mongodb://localhost:27017/app'
+	mongo = PyMongo(app)
 
 try:
 	GOOGLE_AUTH_KEY = os.environ['GOOGLE_AUTH']
