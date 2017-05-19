@@ -3,7 +3,7 @@ import os
 import datetime
 import requests
 import json
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_pymongo import PyMongo, MongoClient
 
 try:
@@ -52,6 +52,10 @@ def makeTimeStamp(item):
 		'query': item['query'] 
 	}
 
+@app.route('/', methods=['GET'])
+def home_page():
+	return render_template('index.html')
+	
 @app.route('/imagesearch/<query>', methods=['GET'])
 def image_search(query):
 	timestamp = datetime.datetime.utcnow()
